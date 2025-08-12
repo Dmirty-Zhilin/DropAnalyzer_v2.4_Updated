@@ -1,0 +1,70 @@
+services:
+  db:
+    image: postgres:15
+    container_name: dropanalyzer-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "55432:5432"   # внешний порт, изменяем чтобы избежать конфликтов
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    container_name: dropanalyzer-redis
+    restart: unless-stopped
+    ports:
+      - "56379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    working_dir: /app/dropanalyzer-backend
+    env_file:
+      - .env
+    environment:
+      - SERVICE_ROLE=web
+      - PYTHONPATH=/app/dropanalyzer-backend:/app
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis
+    ports:
+      - "5000:5000"
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    working_dir: /app/dropanalyzer-backend
+    env_file:
+      - .env
+    environment:
+      - SERVICE_ROLE=worker
+      - PYTHONPATH=/app/dropanalyzer-backend:/app
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis
+
+volumes:
+  db_data:
+  redis_data:

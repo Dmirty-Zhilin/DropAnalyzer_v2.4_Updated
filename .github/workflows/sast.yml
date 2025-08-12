@@ -1,0 +1,26 @@
+
+name: SAST & SCA
+
+on: [push, pull_request]
+
+jobs:
+  sast_sca:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies for scans
+        run: |
+          python -m pip install --upgrade pip
+          pip install bandit semgrep safety
+      - name: Run bandit
+        run: bandit -r dropanalyzer-backend -lll || true
+      - name: Run semgrep
+        run: semgrep --config=auto dropanalyzer-backend || true
+      - name: Run safety check
+        run: |
+          pip freeze > requirements-lock.txt || true
+          safety check -r requirements-lock.txt || true
