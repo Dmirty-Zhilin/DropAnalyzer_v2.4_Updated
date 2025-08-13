@@ -14,8 +14,7 @@ if config.config_file_name is not None:
 import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from src.models.domain import db, Domain, Report
-# the SQLAlchemy URL
-DATABASE_URL = os.environ.get('DATABASE_URL') or os.environ.get('SQLALCHEMY_DATABASE_URI') or 'postgresql://key65drop:eY73j9Emr4MWNjbkTPPm@db:5432/dropanalyzer'
+# the SQLAlchemy URLDATABASE_URL = os.environ.get("DATABASE_URL") or os.environ.get("SQLALCHEMY_DATABASE_URI") or f"postgresql://{os.environ.get("POSTGRES_USER")}:{os.environ.get("POSTGRES_PASSWORD")}@db:5432/{os.environ.get("POSTGRES_DB")}"POSTGRES_PASSWORD")}@db:5432/{os.environ.get("POSTGRES_DB")}"'
 config.set_main_option('sqlalchemy.url', DATABASE_URL)
 target_metadata = db.metadata
 def run_migrations_offline():

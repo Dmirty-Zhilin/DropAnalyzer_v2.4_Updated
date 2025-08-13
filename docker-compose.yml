@@ -1,3 +1,4 @@
+version: '3.8'
 services:
   db:
     image: postgres:15
@@ -48,6 +49,7 @@ services:
       - redis
     ports:
       - "5000:5000"
+    entrypoint: ["/bin/bash", "-c", "/app/dropanalyzer-backend/scripts/db_init.py && gunicorn --bind 0.0.0.0:5000 src.main:app --workers 3"]
 
   worker:
     build:

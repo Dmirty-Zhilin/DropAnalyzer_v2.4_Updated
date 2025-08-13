@@ -44,7 +44,7 @@ app.register_blueprint(user_bp, url_prefix='/api')
 
 # Настройка SQLAlchemy: читать из окружения DATABASE_URL или SQLALCHEMY_DATABASE_URI,
 # иначе использовать локальный sqlite (dev fallback)
-db_url = os.environ.get('SQLALCHEMY_DATABASE_URI') or os.environ.get('DATABASE_URL')
+db_url = os.environ.get("SQLALCHEMY_DATABASE_URI") or os.environ.get("DATABASE_URL") or ("postgresql://%s:%s@db:5432/%s" % (os.environ.get("POSTGRES_USER"), os.environ.get("POSTGRES_PASSWORD"), os.environ.get("POSTGRES_DB")))
 if not db_url:
     # default dev sqlite (file inside src/database/app.db)
     db_file = os.path.join(os.path.dirname(__file__), 'database', 'app.db')

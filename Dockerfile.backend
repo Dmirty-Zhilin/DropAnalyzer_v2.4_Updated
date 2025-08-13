@@ -8,7 +8,7 @@ WORKDIR /app
 
 # Установим системные зависимости для сборки некоторых зависимостей
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential gcc libpq-dev curl ca-certificates \
+    build-essential gcc libpq-dev curl ca-certificates python3-dev \
   && rm -rf /var/lib/apt/lists/*
 
 # Скопируем requirements (предполагается, что requirements лежит в указанном месте)
@@ -30,5 +30,5 @@ RUN if [ -f /app/scripts/entrypoint.sh ]; then chmod +x /app/scripts/entrypoint.
 USER appuser
 WORKDIR /app
 
-ENTRYPOINT ["/app/scripts/entrypoint.sh"]
+
 CMD ["gunicorn", "--bind", "0.0.0.0:5000", "src.main:app", "--workers", "3"]

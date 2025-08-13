@@ -27,8 +27,9 @@ export const login = async (username, password) => {
   try {
     const response = await apiClient.post('/login', { username, password });
     if (response.data.access_token) {
-      localStorage.setItem('token', response.data.access_token);
-      localStorage.setItem('isAuthenticated', 'true'); // Ensure this is set here
+      localStorage.setItem("token", response.data.access_token);
+      localStorage.setItem("isAuthenticated", "true");
+      apiClient.defaults.headers.common["Authorization"] = `Bearer ${response.data.access_token}`;
     }
     return response.data;
   } catch (error) {
