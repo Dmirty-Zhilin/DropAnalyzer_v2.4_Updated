@@ -20,6 +20,9 @@ RUN pip install --upgrade pip setuptools wheel \
 # Копируем проект
 COPY . /app
 
+# Добавляем права на выполнение для скрипта db_init.py
+RUN chmod +x /app/dropanalyzer-backend/scripts/db_init.py
+
 # Создаём непривилегированного пользователя
 RUN groupadd -r appuser && useradd -r -g appuser -m -d /home/appuser -s /bin/bash appuser \
     && chown -R appuser:appuser /app
